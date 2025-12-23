@@ -1,0 +1,80 @@
+# ============================================================================
+# Q25 Demo Makefile - 交叉编译 (aarch64)
+# ============================================================================
+# 使用方法:
+#   make -f Makefile.arm          - 编译所有demo
+#   make -f Makefile.arm all      - 编译所有demo
+#   make -f Makefile.arm clean    - 清理编译产物
+#   make -f Makefile.arm <name>   - 编译单个demo
+# ============================================================================
+
+# 交叉编译器配置
+CXX      := aarch64-linux-gnu-g++
+CXXFLAGS := -std=c++11 -pthread -Wall -O2
+LDFLAGS  := -pthread
+
+# 输出目录
+BUILD_DIR := build/linux/aarch64
+
+# Demo 列表
+DEMOS := \
+    auto_charge_demo \
+    axis_control_demo \
+    emergency_stop_demo \
+    gait_switch_demo \
+    height_control_demo \
+    motion_mode_demo \
+    power_control_demo \
+    stand_lie_demo \
+    status_receiver_demo
+
+# 目标可执行文件（带路径）
+TARGETS := $(addprefix $(BUILD_DIR)/, $(DEMOS))
+
+# ============================================================================
+# 规则
+# ============================================================================
+
+.PHONY: all clean help $(DEMOS)
+
+all: $(TARGETS)
+	@echo ""
+	@echo "=========================================="
+	@echo " 交叉编译完成！可执行文件位于: $(BUILD_DIR)/"
+	@echo " 目标架构: aarch64"
+	@echo "=========================================="
+
+# 创建输出目录
+$(BUILD_DIR):
+	@mkdir -p $(BUILD_DIR)
+
+# 编译规则: build/linux/aarch64/xxx_demo <- xxx_demo.cpp
+$(BUILD_DIR)/%: %.cpp | $(BUILD_DIR)
+	@echo "[CXX-ARM] $< -> $@"
+	@$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS)
+
+# 快捷目标: make -f Makefile.arm axis_control_demo
+$(DEMOS): %: $(BUILD_DIR)/%
+
+clean:
+	@echo "[CLEAN] 清理编译产物..."
+	@rm -rf $(BUILD_DIR)
+	@echo "[CLEAN] 完成"
+
+help:
+	@echo ""
+	@echo "Q25 Demo Makefile (ARM交叉编译) 使用说明"
+	@echo "=========================================="
+	@echo "  make -f Makefile.arm          - 编译所有demo"
+	@echo "  make -f Makefile.arm all      - 编译所有demo"
+	@echo "  make -f Makefile.arm clean    - 清理编译产物"
+	@echo "  make -f Makefile.arm <name>   - 编译单个demo"
+	@echo ""
+	@echo "交叉编译器: $(CXX)"
+	@echo ""
+	@echo "可用的demo:"
+	@echo "  $(DEMOS)" | tr ' ' '\n' | sed 's/^/    /'
+	@echo ""
+	@echo "输出目录: $(BUILD_DIR)/"
+	@echo "=========================================="
+
