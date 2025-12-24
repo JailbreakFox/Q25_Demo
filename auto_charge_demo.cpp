@@ -38,7 +38,6 @@ const int ROBOT_PORT = 43893;
 // ============ 命令码 ============
 constexpr uint32_t CMD_HEARTBEAT         = 0x21040001;
 constexpr uint32_t CMD_AUTO_CHARGE_START = 0x91910250;  // 自主充电启动/停止
-constexpr uint32_t CMD_AUTO_CHARGE_ASK   = 0x91910253;  // 查询充电状态
 
 // ============ 充电任务参数 ============
 constexpr int32_t CHARGE_START = 0;  // 启动充电任务
@@ -97,11 +96,6 @@ void stopAutoCharge() {
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_AUTO_CHARGE_START, CHARGE_STOP);
 }
 
-void queryChargeStatus() {
-    std::cout << "[INFO] 查询充电状态..." << std::endl;
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_AUTO_CHARGE_ASK);
-}
-
 // ============ 主函数 ============
 int main() {
     std::cout << "========================================" << std::endl;
@@ -116,22 +110,20 @@ int main() {
     std::thread hb_thread(heartbeatThread);
     std::cout << "[INFO] 心跳线程已启动 (2Hz)" << std::endl;
 
-    // 等待500ms确保心跳已启动
-    usleep(500000);
+    // 等待1s确保心跳已启动
+    sleep(1);
 
     // 启动自主充电
     startAutoCharge();
     std::cout << "[INFO] 充电任务执行中，等待5秒..." << std::endl;
     sleep(5);
 
-    // 查询充电状态
-    queryChargeStatus();
-    sleep(1);
-
     // 停止自主充电
+    /*
     stopAutoCharge();
     std::cout << "[INFO] 充电任务已停止" << std::endl;
     sleep(1);
+    */
 
     // 停止心跳线程
     heartbeat_running = false;

@@ -137,15 +137,15 @@ int main() {
     // 启动心跳线程
     std::thread hb_thread(heartbeatThread);
 
-    // 等待500ms确保心跳已启动
-    usleep(500000);
-
-    // 前进2秒
-    moveForward(2);
+    // 等待1s确保心跳已启动
     sleep(1);
 
-    // 后退2秒
-    moveBackward(2);
+    // 前进1秒
+    moveForward(1);
+    sleep(1);
+
+    // 后退1秒
+    moveBackward(1);
     sleep(1);
 
     // 左转2秒
@@ -156,12 +156,12 @@ int main() {
     turnRight(2);
     sleep(1);
 
-    // 左移2秒
-    moveLeft(2);
+    // 左移1秒
+    moveLeft(1);
     sleep(1);
 
-    // 右移2秒
-    moveRight(2);
+    // 右移1秒
+    moveRight(1);
     sleep(1);
 
     // 停止心跳线程

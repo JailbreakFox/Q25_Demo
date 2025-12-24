@@ -116,8 +116,8 @@ int main() {
     std::thread hb_thread(heartbeatThread);
     std::cout << "[INFO] 心跳线程已启动 (2Hz)" << std::endl;
 
-    // 等待500ms确保心跳已启动
-    usleep(500000);
+    // 等待1s确保心跳已启动
+    sleep(1);
 
     // 站立
     std::cout << "[INFO] 发送站立命令..." << std::endl;

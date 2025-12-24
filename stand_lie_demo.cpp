@@ -73,8 +73,8 @@ int main() {
     // 启动心跳线程
     std::thread hb_thread(heartbeatThread);
 
-    // 等待500ms确保心跳已启动
-    usleep(500000);
+    // 等待1s确保心跳已启动
+    sleep(1);
 
     // 站立
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);

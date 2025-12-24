@@ -95,14 +95,14 @@ int main() {
     std::thread hb_thread(heartbeatThread);
     std::cout << "[INFO] 心跳线程已启动 (2Hz)" << std::endl;
 
-    // 等待500ms确保心跳已启动
-    usleep(500000);
+    // 等待1s确保心跳已启动
+    sleep(1);
 
     // 站立
     std::cout << "[INFO] 发送站立命令..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
-    std::cout << "[INFO] 等待2秒..." << std::endl;
-    sleep(2);
+    std::cout << "[INFO] 等待5秒..." << std::endl;
+    sleep(5);
 
     // 急停
     emergencyStop();
