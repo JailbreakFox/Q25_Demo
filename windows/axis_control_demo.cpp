@@ -31,6 +31,7 @@ const int ROBOT_PORT = 43893;
 
 // ============ 命令码 ============
 constexpr uint32_t CMD_HEARTBEAT     = 0x21040001;
+constexpr uint32_t CMD_STAND_UP      = 0x21010202;
 constexpr uint32_t CMD_LEFT_YAXIS    = 0x21010130;  // 左摇杆Y轴（前后）
 constexpr uint32_t CMD_LEFT_XAXIS    = 0x21010131;  // 左摇杆X轴（左右）
 constexpr uint32_t CMD_RIGHT_XAXIS   = 0x21010135;  // 右摇杆X轴（旋转）
@@ -157,6 +158,12 @@ int main() {
 
     // 等待1s确保心跳已启动
     Sleep(1000);
+
+    // 站立
+    std::cout << "[INFO] 发送站立命令..." << std::endl;
+    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
+    std::cout << "[INFO] 等待10秒..." << std::endl;
+    Sleep(10000);
 
     // 前进1秒
     std::cout << "[INFO] 前进1秒..." << std::endl;

@@ -48,7 +48,7 @@ const int ROBOT_PORT = 43893;
 constexpr uint32_t CMD_HEARTBEAT           = 0x21040001;
 constexpr uint32_t CMD_POWER_DRIVER_MOTOR  = 0x80110201;  // 驱动电机电源
 constexpr uint32_t CMD_POWER_STATUS        = 0x80110202;  // 电源状态查询
-constexpr uint32_t CMD_POWER_UPLOAD        = 0x80110801;  // 外挂电脑电源
+constexpr uint32_t CMD_POWER_UPLOAD        = 0x80110801;  // 上装供电电源
 constexpr uint32_t CMD_POWER_LIDAR_FU      = 0x80110501;  // 前上雷达电源
 constexpr uint32_t CMD_POWER_LIDAR_FL      = 0x80110502;  // 前下雷达电源
 constexpr uint32_t CMD_POWER_LIDAR_BU      = 0x80110503;  // 后上雷达电源
@@ -154,32 +154,32 @@ int main() {
     // 等待1s确保心跳已启动
     Sleep(1000);
 
-    // 开启前上雷达
-    setLidarFUPower(true);
-    std::cout << "[INFO] 等待2秒..." << std::endl;
-    Sleep(2000);
+    // 关闭前上雷达
+    setLidarFUPower(false);
+    std::cout << "[INFO] 等待20秒..." << std::endl;
+    Sleep(20000);
 
-    // 开启前下雷达
-    setLidarFLPower(true);
-    std::cout << "[INFO] 等待2秒..." << std::endl;
-    Sleep(2000);
+    // 关闭前下雷达
+    setLidarFLPower(false);
+    std::cout << "[INFO] 等待20秒..." << std::endl;
+    Sleep(20000);
 
-    // 开启外挂电脑
+    // 开启上装供电
     setUploadPower(true);
-    std::cout << "[INFO] 等待2秒..." << std::endl;
-    Sleep(2000);
+    std::cout << "[INFO] 等待20秒..." << std::endl;
+    Sleep(20000);
 
     // 关闭所有雷达
     std::cout << "[INFO] 关闭所有雷达电源..." << std::endl;
-    setLidarFUPower(false);
-    setLidarFLPower(false);
-    setLidarBUPower(false);
-    setLidarBLPower(false);
+    setLidarFUPower(true);
+    setLidarFLPower(true);
+    setLidarBUPower(true);
+    setLidarBLPower(true);
     Sleep(1000);
 
-    // 关闭外挂电脑
+    // 关闭上装供电
     setUploadPower(false);
-    Sleep(1000);
+    Sleep(10000);
 
     // 停止心跳线程
     heartbeat_running = false;

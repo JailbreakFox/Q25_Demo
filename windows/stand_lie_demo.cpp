@@ -99,8 +99,8 @@ int main() {
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
 
     // 等待3秒
-    std::cout << "[INFO] 等待3秒..." << std::endl;
-    Sleep(3000);
+    std::cout << "[INFO] 等待10秒..." << std::endl;
+    Sleep(10000);
 
     // 趴下
     std::cout << "[INFO] 发送趴下命令..." << std::endl;

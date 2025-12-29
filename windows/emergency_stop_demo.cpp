@@ -111,8 +111,8 @@ int main() {
     // 站立
     std::cout << "[INFO] 发送站立命令..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
-    std::cout << "[INFO] 等待5秒..." << std::endl;
-    Sleep(5000);
+    std::cout << "[INFO] 等待10秒..." << std::endl;
+    Sleep(10000);
 
     // 急停
     emergencyStop();

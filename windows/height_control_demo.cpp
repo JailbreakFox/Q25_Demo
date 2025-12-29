@@ -8,7 +8,7 @@
  * 流程:
  *   1. 启动2Hz心跳（每500ms发送一次）
  *   2. 发送站立命令
- *   3. 设置低高度
+ *   3. 设置匍匐
  *   4. 等待2秒
  *   5. 设置中高度
  *   6. 等待2秒
@@ -17,7 +17,7 @@
  *   9. 趴下并退出
  *
  * 高度说明:
- *   - 0: 低高度 - 重心较低，更稳定
+ *   - 0: 匍匐 - 重心较低，更稳定
  *   - 1: 中高度 - 默认高度
  *   - 2: 高高度 - 视野更好，但稳定性略降
  */
@@ -44,9 +44,8 @@ constexpr uint32_t CMD_LIE_DOWN      = 0x21010222;
 constexpr uint32_t CMD_CHANGE_HEIGHT = 0x21010406;  // 高度调节
 
 // ============ 高度值定义 ============
-constexpr int32_t HEIGHT_LOW    = 0;  // 低高度
-constexpr int32_t HEIGHT_MEDIUM = 1;  // 中高度
-constexpr int32_t HEIGHT_HIGH   = 2;  // 高高度
+constexpr int32_t HEIGHT_LOW    = 0;  // 匍匐
+constexpr int32_t HEIGHT_HIGH   = 2;  // 正常高度
 
 // ============ UDP命令结构 ============
 #pragma pack(push, 1)
@@ -93,17 +92,12 @@ void heartbeatThread() {
 // ============ 高度调节函数 ============
 
 void setHeightLow() {
-    std::cout << "[INFO] 设置低高度..." << std::endl;
+    std::cout << "[INFO] 设置匍匐..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_CHANGE_HEIGHT, HEIGHT_LOW);
 }
 
-void setHeightMedium() {
-    std::cout << "[INFO] 设置中高度..." << std::endl;
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_CHANGE_HEIGHT, HEIGHT_MEDIUM);
-}
-
-void setHeightHigh() {
-    std::cout << "[INFO] 设置高高度..." << std::endl;
+void setNormalHigh() {
+    std::cout << "[INFO] 设置正常高度..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_CHANGE_HEIGHT, HEIGHT_HIGH);
 }
 
@@ -132,22 +126,17 @@ int main() {
     // 站立
     std::cout << "[INFO] 发送站立命令..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
-    Sleep(2000);
+    Sleep(10000);
 
-    // 设置低高度
+    // 设置匍匐
     setHeightLow();
-    std::cout << "[INFO] 等待2秒..." << std::endl;
-    Sleep(2000);
-
-    // 设置中高度
-    setHeightMedium();
-    std::cout << "[INFO] 等待2秒..." << std::endl;
-    Sleep(2000);
+    std::cout << "[INFO] 等待10秒..." << std::endl;
+    Sleep(10000);
 
     // 设置高高度
-    setHeightHigh();
-    std::cout << "[INFO] 等待2秒..." << std::endl;
-    Sleep(2000);
+    setNormalHigh();
+    std::cout << "[INFO] 等待10秒..." << std::endl;
+    Sleep(10000);
 
     // 趴下
     std::cout << "[INFO] 发送趴下命令..." << std::endl;

@@ -46,6 +46,7 @@ set(PLATFORM_LIBS ws2_32)
 set(DEMO_SOURCES
     auto_charge_demo
     axis_control_demo
+    axis_control_demo_new
     emergency_stop_demo
     gait_switch_demo
     height_control_demo
@@ -79,4 +80,5 @@ message(STATUS "CMake version:    ${CMAKE_VERSION}")
 message(STATUS "Build type:       ${CMAKE_BUILD_TYPE}")
 message(STATUS "C++ compiler:     ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Output directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
 

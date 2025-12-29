@@ -7,7 +7,7 @@
  *
  * 流程:
  *   1. 启动2Hz心跳（每500ms发送一次）
- *   2. 切换到遥控模式
+ *   2. 切换到手动模式
  *   3. 等待3秒
  *   4. 切换到导航模式
  *   5. 等待3秒
@@ -15,7 +15,7 @@
  *   7. 等待1秒后退出
  *
  * 运动模式说明:
- *   - 遥控模式(MANUAL): 机器人响应手动控制指令
+ *   - 手动模式(MANUAL): 机器人响应手动控制指令
  *   - 导航模式(NAVI): 机器人执行自主导航任务
  *   - 辅助模式(ASSISTANT): 机器人进入辅助控制模式
  */
@@ -37,7 +37,7 @@ const int ROBOT_PORT = 43893;
 
 // ============ 命令码 ============
 constexpr uint32_t CMD_HEARTBEAT      = 0x21040001;
-constexpr uint32_t CMD_MANUAL_MODE    = 0x21010C02;  // 遥控模式
+constexpr uint32_t CMD_MANUAL_MODE    = 0x21010C02;  // 手动模式
 constexpr uint32_t CMD_NAVI_MODE      = 0x21010C03;  // 导航模式
 constexpr uint32_t CMD_ASSISTANT_MODE = 0x21010C04;  // 辅助模式
 
@@ -82,9 +82,9 @@ void heartbeatThread() {
 
 // ============ 模式切换函数 ============
 
-// 切换到遥控模式
+// 切换到手动模式
 void switchToManualMode() {
-    std::cout << "[INFO] 切换到遥控模式..." << std::endl;
+    std::cout << "[INFO] 切换到手动模式..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_MANUAL_MODE);
 }
 
@@ -122,7 +122,7 @@ int main() {
     // 等待1s确保心跳已启动
     Sleep(1000);
 
-    // 切换到遥控模式
+    // 切换到手动模式
     switchToManualMode();
     std::cout << "[INFO] 等待3秒..." << std::endl;
     Sleep(3000);

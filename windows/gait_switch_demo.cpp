@@ -119,17 +119,17 @@ int main() {
     // 站立
     std::cout << "[INFO] 发送站立命令..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
-    Sleep(2000);
+    Sleep(10000);
 
     // 切换到Walk步态
     switchToWalkGait();
-    std::cout << "[INFO] 等待3秒..." << std::endl;
-    Sleep(3000);
+    std::cout << "[INFO] 等待10秒..." << std::endl;
+    Sleep(10000);
 
     // 切换到Run步态
     switchToRunGait();
-    std::cout << "[INFO] 等待3秒..." << std::endl;
-    Sleep(3000);
+    std::cout << "[INFO] 等待10秒..." << std::endl;
+    Sleep(10000);
 
     // 趴下
     std::cout << "[INFO] 发送趴下命令..." << std::endl;
