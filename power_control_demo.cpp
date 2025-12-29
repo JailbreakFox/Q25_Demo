@@ -1,3 +1,9 @@
+// ====================================================================
+//          Created:    2025/12/25/ 15:33
+//	         Author:	xuyanghe
+//	        Company:
+// ====================================================================
+
 /**
  * @file power_control_demo.cpp
  * @brief 四足机器人设备电源控制Demo (Windows版)
@@ -103,32 +109,32 @@ void heartbeatThread() {
 // ============ 电源控制函数 ============
 
 void setLidarFUPower(bool on) {
-    std::cout << "[INFO] " << (on ? "开启" : "关闭") << "前上雷达电源..." << std::endl;
+    std::cout << "[INFO] " << (on ? "Turning ON" : "Turning OFF") << " Front Upper Lidar power..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_POWER_LIDAR_FU, on ? POWER_ON : POWER_OFF);
 }
 
 void setLidarFLPower(bool on) {
-    std::cout << "[INFO] " << (on ? "开启" : "关闭") << "前下雷达电源..." << std::endl;
+    std::cout << "[INFO] " << (on ? "Turning ON" : "Turning OFF") << " Front Lower Lidar power..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_POWER_LIDAR_FL, on ? POWER_ON : POWER_OFF);
 }
 
 void setLidarBUPower(bool on) {
-    std::cout << "[INFO] " << (on ? "开启" : "关闭") << "后上雷达电源..." << std::endl;
+    std::cout << "[INFO] " << (on ? "Turning ON" : "Turning OFF") << " Back Upper Lidar power..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_POWER_LIDAR_BU, on ? POWER_ON : POWER_OFF);
 }
 
 void setLidarBLPower(bool on) {
-    std::cout << "[INFO] " << (on ? "开启" : "关闭") << "后下雷达电源..." << std::endl;
+    std::cout << "[INFO] " << (on ? "Turning ON" : "Turning OFF") << " Back Lower Lidar power..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_POWER_LIDAR_BL, on ? POWER_ON : POWER_OFF);
 }
 
 void setUploadPower(bool on) {
-    std::cout << "[INFO] " << (on ? "开启" : "关闭") << "外挂电脑电源..." << std::endl;
+    std::cout << "[INFO] " << (on ? "Turning ON" : "Turning OFF") << " Upload computer power..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_POWER_UPLOAD, on ? POWER_ON : POWER_OFF);
 }
 
 void setDriverMotorPower(bool on) {
-    std::cout << "[INFO] " << (on ? "开启" : "关闭") << "驱动电机电源..." << std::endl;
+    std::cout << "[INFO] " << (on ? "Turning ON" : "Turning OFF") << " Driver motor power..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_POWER_DRIVER_MOTOR, on ? POWER_ON : POWER_OFF);
 }
 
@@ -137,40 +143,40 @@ int main() {
     // 初始化 Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "[ERROR] Winsock 初始化失败" << std::endl;
+        std::cerr << "[ERROR] Winsock initialization failed" << std::endl;
         return -1;
     }
 
     std::cout << "========================================" << std::endl;
-    std::cout << "  四足机器人设备电源控制Demo (Windows)" << std::endl;
+    std::cout << "  Quadruped Robot Power Control Demo" << std::endl;
     std::cout << "========================================" << std::endl;
-    std::cout << "目标机器人: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
+    std::cout << "Target Robot: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
     std::cout << std::endl;
 
     // 启动心跳线程
     std::thread hb_thread(heartbeatThread);
-    std::cout << "[INFO] 心跳线程已启动 (2Hz)" << std::endl;
+    std::cout << "[INFO] Heartbeat thread started (2Hz)" << std::endl;
 
     // 等待1s确保心跳已启动
     Sleep(1000);
 
     // 关闭前上雷达
     setLidarFUPower(false);
-    std::cout << "[INFO] 等待20秒..." << std::endl;
+    std::cout << "[INFO] Waiting 20 seconds..." << std::endl;
     Sleep(20000);
 
     // 关闭前下雷达
     setLidarFLPower(false);
-    std::cout << "[INFO] 等待20秒..." << std::endl;
+    std::cout << "[INFO] Waiting 20 seconds..." << std::endl;
     Sleep(20000);
 
     // 开启上装供电
     setUploadPower(true);
-    std::cout << "[INFO] 等待20秒..." << std::endl;
+    std::cout << "[INFO] Waiting 20 seconds..." << std::endl;
     Sleep(20000);
 
     // 关闭所有雷达
-    std::cout << "[INFO] 关闭所有雷达电源..." << std::endl;
+    std::cout << "[INFO] Turning OFF all Lidar power..." << std::endl;
     setLidarFUPower(true);
     setLidarFLPower(true);
     setLidarBUPower(true);
@@ -188,7 +194,7 @@ int main() {
     // 清理 Winsock
     WSACleanup();
 
-    std::cout << "[INFO] Demo结束" << std::endl;
+    std::cout << "[INFO] Demo finished" << std::endl;
     return 0;
 }
 

@@ -1,3 +1,9 @@
+// ====================================================================
+//          Created:    2025/12/25/ 15:33
+//	         Author:	xuyanghe
+//	        Company:
+// ====================================================================
+
 /**
  * @file height_control_demo.cpp
  * @brief 四足机器人高度调节Demo (Windows版)
@@ -92,12 +98,12 @@ void heartbeatThread() {
 // ============ 高度调节函数 ============
 
 void setHeightLow() {
-    std::cout << "[INFO] 设置匍匐..." << std::endl;
+    std::cout << "[INFO] Setting low height..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_CHANGE_HEIGHT, HEIGHT_LOW);
 }
 
 void setNormalHigh() {
-    std::cout << "[INFO] 设置正常高度..." << std::endl;
+    std::cout << "[INFO] Setting normal height..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_CHANGE_HEIGHT, HEIGHT_HIGH);
 }
 
@@ -106,40 +112,40 @@ int main() {
     // 初始化 Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "[ERROR] Winsock 初始化失败" << std::endl;
+        std::cerr << "[ERROR] Winsock initialization failed" << std::endl;
         return -1;
     }
 
     std::cout << "========================================" << std::endl;
-    std::cout << "  四足机器人高度调节Demo (Windows)" << std::endl;
+    std::cout << "  Quadruped Robot Height Control Demo" << std::endl;
     std::cout << "========================================" << std::endl;
-    std::cout << "目标机器人: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
+    std::cout << "Target Robot: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
     std::cout << std::endl;
 
     // 启动心跳线程
     std::thread hb_thread(heartbeatThread);
-    std::cout << "[INFO] 心跳线程已启动 (2Hz)" << std::endl;
+    std::cout << "[INFO] Heartbeat thread started (2Hz)" << std::endl;
 
     // 等待1s确保心跳已启动
     Sleep(1000);
 
     // 站立
-    std::cout << "[INFO] 发送站立命令..." << std::endl;
+    std::cout << "[INFO] Sending stand up command..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
     Sleep(10000);
 
     // 设置匍匐
     setHeightLow();
-    std::cout << "[INFO] 等待10秒..." << std::endl;
+    std::cout << "[INFO] Waiting 10 seconds..." << std::endl;
     Sleep(10000);
 
     // 设置高高度
     setNormalHigh();
-    std::cout << "[INFO] 等待10秒..." << std::endl;
+    std::cout << "[INFO] Waiting 10 seconds..." << std::endl;
     Sleep(10000);
 
     // 趴下
-    std::cout << "[INFO] 发送趴下命令..." << std::endl;
+    std::cout << "[INFO] Sending lie down command..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LIE_DOWN);
     Sleep(1000);
 
@@ -150,7 +156,7 @@ int main() {
     // 清理 Winsock
     WSACleanup();
 
-    std::cout << "[INFO] Demo结束" << std::endl;
+    std::cout << "[INFO] Demo finished" << std::endl;
     return 0;
 }
 

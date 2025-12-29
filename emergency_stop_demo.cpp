@@ -1,23 +1,30 @@
+// ====================================================================
+//          Created:    2025/12/25/ 15:33
+//	         Author:	xuyanghe
+//	        Company:
+// ====================================================================
+
 /**
- * @file motion_mode_demo.cpp
- * @brief 四足机器人运动模式切换Demo (Windows版)
+ * @file emergency_stop_demo.cpp
+ * @brief 四足机器人急停控制Demo (Windows版)
  *
  * 编译: 使用 CMake 或 Visual Studio
- * 运行: motion_mode_demo.exe
+ * 运行: emergency_stop_demo.exe
  *
  * 流程:
  *   1. 启动2Hz心跳（每500ms发送一次）
- *   2. 切换到手动模式
- *   3. 等待3秒
- *   4. 切换到导航模式
- *   5. 等待3秒
- *   6. 切换到辅助模式
- *   7. 等待1秒后退出
+ *   2. 发送站立命令
+ *   3. 等待2秒
+ *   4. 发送急停命令（机器人会立即停止所有运动并趴下）
+ *   5. 等待1秒后退出
  *
- * 运动模式说明:
- *   - 手动模式(MANUAL): 机器人响应手动控制指令
- *   - 导航模式(NAVI): 机器人执行自主导航任务
- *   - 辅助模式(ASSISTANT): 机器人进入辅助控制模式
+ * 急停说明:
+ *   - 急停命令会使机器人立即停止所有运动
+ *   - 机器人会进入安全趴下状态
+ *   - 适用于紧急情况下快速停止机器人
+ *
+ * 注意:
+ *   - 急停后需要重新发送站立命令才能恢复运动
  */
 
 #include <cstring>
@@ -36,10 +43,9 @@ const char* ROBOT_IP = "192.168.3.20";
 const int ROBOT_PORT = 43893;
 
 // ============ 命令码 ============
-constexpr uint32_t CMD_HEARTBEAT      = 0x21040001;
-constexpr uint32_t CMD_MANUAL_MODE    = 0x21010C02;  // 手动模式
-constexpr uint32_t CMD_NAVI_MODE      = 0x21010C03;  // 导航模式
-constexpr uint32_t CMD_ASSISTANT_MODE = 0x21010C04;  // 辅助模式
+constexpr uint32_t CMD_HEARTBEAT     = 0x21040001;
+constexpr uint32_t CMD_STAND_UP      = 0x21010202;
+constexpr uint32_t CMD_EMERGENCY_STOP = 0x21010C0E;  // 急停命令
 
 // ============ UDP命令结构 ============
 #pragma pack(push, 1)
@@ -80,24 +86,10 @@ void heartbeatThread() {
     }
 }
 
-// ============ 模式切换函数 ============
-
-// 切换到手动模式
-void switchToManualMode() {
-    std::cout << "[INFO] 切换到手动模式..." << std::endl;
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_MANUAL_MODE);
-}
-
-// 切换到导航模式
-void switchToNaviMode() {
-    std::cout << "[INFO] 切换到导航模式..." << std::endl;
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_NAVI_MODE);
-}
-
-// 切换到辅助模式
-void switchToAssistantMode() {
-    std::cout << "[INFO] 切换到辅助模式..." << std::endl;
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_ASSISTANT_MODE);
+// ============ 急停函数 ============
+void emergencyStop() {
+    std::cout << "[WARNING] Sending EMERGENCY STOP command!" << std::endl;
+    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_EMERGENCY_STOP);
 }
 
 // ============ 主函数 ============
@@ -105,36 +97,32 @@ int main() {
     // 初始化 Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "[ERROR] Winsock 初始化失败" << std::endl;
+        std::cerr << "[ERROR] Winsock initialization failed" << std::endl;
         return -1;
     }
 
     std::cout << "========================================" << std::endl;
-    std::cout << "  四足机器人运动模式切换Demo (Windows)" << std::endl;
+    std::cout << "  Quadruped Robot Emergency Stop Demo" << std::endl;
     std::cout << "========================================" << std::endl;
-    std::cout << "目标机器人: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
+    std::cout << "Target Robot: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
     std::cout << std::endl;
 
     // 启动心跳线程
     std::thread hb_thread(heartbeatThread);
-    std::cout << "[INFO] 心跳线程已启动 (2Hz)" << std::endl;
+    std::cout << "[INFO] Heartbeat thread started (2Hz)" << std::endl;
 
     // 等待1s确保心跳已启动
     Sleep(1000);
 
-    // 切换到手动模式
-    switchToManualMode();
-    std::cout << "[INFO] 等待3秒..." << std::endl;
-    Sleep(3000);
+    // 站立
+    std::cout << "[INFO] Sending stand up command..." << std::endl;
+    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
+    std::cout << "[INFO] Waiting 10 seconds..." << std::endl;
+    Sleep(10000);
 
-    // 切换到导航模式
-    switchToNaviMode();
-    std::cout << "[INFO] 等待3秒..." << std::endl;
-    Sleep(3000);
-
-    // 切换到辅助模式
-    switchToAssistantMode();
-    std::cout << "[INFO] 等待1秒..." << std::endl;
+    // 急停
+    emergencyStop();
+    std::cout << "[INFO] Robot emergency stopped" << std::endl;
     Sleep(1000);
 
     // 停止心跳线程
@@ -144,7 +132,7 @@ int main() {
     // 清理 Winsock
     WSACleanup();
 
-    std::cout << "[INFO] Demo结束" << std::endl;
+    std::cout << "[INFO] Demo finished" << std::endl;
     return 0;
 }
 

@@ -1,3 +1,9 @@
+// ====================================================================
+//          Created:    2025/12/25/ 15:33
+//	         Author:	xuyanghe
+//	        Company:
+// ====================================================================
+
 /**
  * @file auto_charge_demo.cpp
  * @brief 四足机器人自主充电Demo (Windows版)
@@ -90,12 +96,12 @@ void heartbeatThread() {
 // ============ 自主充电函数 ============
 
 void startAutoCharge() {
-    std::cout << "[INFO] 启动自主充电任务..." << std::endl;
+    std::cout << "[INFO] Starting auto charge task..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_AUTO_CHARGE_START, CHARGE_START);
 }
 
 void stopAutoCharge() {
-    std::cout << "[INFO] 停止自主充电任务..." << std::endl;
+    std::cout << "[INFO] Stopping auto charge task..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_AUTO_CHARGE_START, CHARGE_STOP);
 }
 
@@ -104,45 +110,45 @@ int main() {
     // 初始化 Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "[ERROR] Winsock 初始化失败" << std::endl;
+        std::cerr << "[ERROR] Winsock initialization failed" << std::endl;
         return -1;
     }
 
     std::cout << "========================================" << std::endl;
-    std::cout << "  四足机器人自主充电Demo (Windows)" << std::endl;
+    std::cout << "  Quadruped Robot Auto Charge Demo" << std::endl;
     std::cout << "========================================" << std::endl;
-    std::cout << "目标机器人: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
+    std::cout << "Target Robot: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
     std::cout << std::endl;
-    std::cout << "注意: 机器人需要先处于导航模式才能执行自主充电" << std::endl;
+    std::cout << "Note: Robot must be in Navigation mode to perform auto charge" << std::endl;
     std::cout << std::endl;
 
-    // 启动心跳线程
+    // Start heartbeat thread
     std::thread hb_thread(heartbeatThread);
-    std::cout << "[INFO] 心跳线程已启动 (2Hz)" << std::endl;
+    std::cout << "[INFO] Heartbeat thread started (2Hz)" << std::endl;
 
-    // 等待1s确保心跳已启动
+    // Wait 1s to ensure heartbeat is running
     Sleep(1000);
 
-    // 启动自主充电
+    // Start auto charge
     startAutoCharge();
-    std::cout << "[INFO] 充电任务执行中，等待5秒..." << std::endl;
+    std::cout << "[INFO] Charge task running, waiting 5 seconds..." << std::endl;
     Sleep(5000);
 
-    // 停止自主充电
+    // Stop auto charge
     /*
     stopAutoCharge();
-    std::cout << "[INFO] 充电任务已停止" << std::endl;
+    std::cout << "[INFO] Charge task stopped" << std::endl;
     Sleep(1000);
     */
 
-    // 停止心跳线程
+    // Stop heartbeat thread
     heartbeat_running = false;
     hb_thread.join();
 
-    // 清理 Winsock
+    // Cleanup Winsock
     WSACleanup();
 
-    std::cout << "[INFO] Demo结束" << std::endl;
+    std::cout << "[INFO] Demo finished" << std::endl;
     return 0;
 }
 

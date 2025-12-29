@@ -1,3 +1,9 @@
+// ====================================================================
+//          Created:    2025/12/25/ 15:33
+//	         Author:	xuyanghe
+//	        Company:
+// ====================================================================
+
 /**
  * @file axis_control_demo_new.cpp
  * @brief 四足机器人轴控制Demo - 使用0x21010140复杂指令 (Windows版)
@@ -95,7 +101,7 @@ struct UDPCommand {
 void sendCommand(const char* ip, int port, uint32_t cmd_code, int32_t param = 0) {
     SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sock == INVALID_SOCKET) {
-        std::cerr << "[ERROR] 创建发送socket失败" << std::endl;
+        std::cerr << "[ERROR] Failed to create socket" << std::endl;
         return;
     }
 
@@ -114,7 +120,7 @@ void sendCommand(const char* ip, int port, uint32_t cmd_code, int32_t param = 0)
 
 // ============ 站立函数 ============
 void standUp(const char* ip, int port) {
-    std::cout << "[INFO] 发送站立指令..." << std::endl;
+    std::cout << "[INFO] Sending stand up command..." << std::endl;
     sendCommand(ip, port, CMD_STAND_UP);
 }
 
@@ -122,7 +128,7 @@ void standUp(const char* ip, int port) {
 void sendAxisControl(const char* ip, int port, const AxisCommand& axisCmd) {
     SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sock == INVALID_SOCKET) {
-        std::cerr << "[ERROR] 创建发送socket失败" << std::endl;
+        std::cerr << "[ERROR] Failed to create socket" << std::endl;
         return;
     }
 
@@ -147,9 +153,9 @@ void sendAxisControl(const char* ip, int port, const AxisCommand& axisCmd) {
                          (struct sockaddr*)&addr, sizeof(addr));
 
     if (sendLen < 0) {
-        std::cerr << "[ERROR] 发送轴控制指令失败" << std::endl;
+        std::cerr << "[ERROR] Failed to send axis control command" << std::endl;
     } else {
-        std::cout << "[INFO] 发送轴控制: left_x=" << axisCmd.left_x
+        std::cout << "[INFO] Send axis control: left_x=" << axisCmd.left_x
                   << ", left_y=" << axisCmd.left_y
                   << ", right_x=" << axisCmd.right_x
                   << ", right_y=" << axisCmd.right_y << std::endl;
@@ -251,60 +257,61 @@ void moveRight(int duration_sec) {
 
 // ============ 主函数 ============
 int main() {
+
     // 初始化 Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "[ERROR] Winsock 初始化失败" << std::endl;
+        std::cerr << "[ERROR] Winsock initialization failed" << std::endl;
         return -1;
     }
 
     std::cout << "========================================" << std::endl;
-    std::cout << "  四足机器人轴控制Demo (Windows)" << std::endl;
-    std::cout << "  使用0x21010140复杂指令" << std::endl;
+    std::cout << "  Quadruped Robot Axis Control Demo" << std::endl;
+    std::cout << "  Using 0x21010140 Extended Command" << std::endl;
     std::cout << "========================================" << std::endl;
-    std::cout << "目标机器人: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
-    std::cout << "轴控制指令码: 0x" << std::hex << CMD_AXIS_CONTROL << std::dec << std::endl;
+    std::cout << "Target Robot: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
+    std::cout << "Axis Control Code: 0x" << std::hex << CMD_AXIS_CONTROL << std::dec << std::endl;
     std::cout << std::endl;
 
     // 启动心跳线程
     std::thread hb_thread(heartbeatThread);
-    std::cout << "[INFO] 心跳线程已启动 (2Hz)" << std::endl;
+    std::cout << "[INFO] Heartbeat thread started (2Hz)" << std::endl;
 
     // 等待1s确保心跳已启动
     Sleep(1000);
 
     // 站立
     standUp(ROBOT_IP, ROBOT_PORT);
-    std::cout << "[INFO] 等待10秒确保站立完成..." << std::endl;
+    std::cout << "[INFO] Waiting 10 seconds for stand up..." << std::endl;
     Sleep(10000);
 
     // 前进1秒
-    std::cout << "[INFO] 前进1秒..." << std::endl;
+    std::cout << "[INFO] Moving forward 1s..." << std::endl;
     moveForward(1);
     Sleep(1000);
 
     // 后退1秒
-    std::cout << "[INFO] 后退1秒..." << std::endl;
+    std::cout << "[INFO] Moving backward 1s..." << std::endl;
     moveBackward(1);
     Sleep(1000);
 
     // 左转2秒
-    std::cout << "[INFO] 左转2秒..." << std::endl;
+    std::cout << "[INFO] Turning left 2s..." << std::endl;
     turnLeft(2);
     Sleep(1000);
 
     // 右转2秒
-    std::cout << "[INFO] 右转2秒..." << std::endl;
+    std::cout << "[INFO] Turning right 2s..." << std::endl;
     turnRight(2);
     Sleep(1000);
 
     // 左移1秒
-    std::cout << "[INFO] 左移1秒..." << std::endl;
+    std::cout << "[INFO] Moving left 1s..." << std::endl;
     moveLeft(1);
     Sleep(1000);
 
     // 右移1秒
-    std::cout << "[INFO] 右移1秒..." << std::endl;
+    std::cout << "[INFO] Moving right 1s..." << std::endl;
     moveRight(1);
     Sleep(1000);
 
@@ -315,6 +322,6 @@ int main() {
     // 清理 Winsock
     WSACleanup();
 
-    std::cout << "[INFO] Demo结束" << std::endl;
+    std::cout << "[INFO] Demo finished" << std::endl;
     return 0;
 }

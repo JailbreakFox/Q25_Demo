@@ -1,3 +1,9 @@
+// ====================================================================
+//          Created:    2025/12/25/ 15:33
+//	         Author:	xuyanghe
+//	        Company:
+// ====================================================================
+
 /**
  * @file gait_switch_demo.cpp
  * @brief 四足机器人步态切换Demo (Windows版)
@@ -84,13 +90,13 @@ void heartbeatThread() {
 
 // 切换到Walk步态
 void switchToWalkGait() {
-    std::cout << "[INFO] 切换到Walk步态..." << std::endl;
+    std::cout << "[INFO] Switching to Walk gait..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_WALK_STATE);
 }
 
 // 切换到Run/Trot步态
 void switchToRunGait() {
-    std::cout << "[INFO] 切换到Run/Trot步态..." << std::endl;
+    std::cout << "[INFO] Switching to Run/Trot gait..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_RUN_STATE);
 }
 
@@ -99,40 +105,40 @@ int main() {
     // 初始化 Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "[ERROR] Winsock 初始化失败" << std::endl;
+        std::cerr << "[ERROR] Winsock initialization failed" << std::endl;
         return -1;
     }
 
     std::cout << "========================================" << std::endl;
-    std::cout << "  四足机器人步态切换Demo (Windows)" << std::endl;
+    std::cout << "  Quadruped Robot Gait Switch Demo" << std::endl;
     std::cout << "========================================" << std::endl;
-    std::cout << "目标机器人: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
+    std::cout << "Target Robot: " << ROBOT_IP << ":" << ROBOT_PORT << std::endl;
     std::cout << std::endl;
 
     // 启动心跳线程
     std::thread hb_thread(heartbeatThread);
-    std::cout << "[INFO] 心跳线程已启动 (2Hz)" << std::endl;
+    std::cout << "[INFO] Heartbeat thread started (2Hz)" << std::endl;
 
     // 等待1s确保心跳已启动
     Sleep(1000);
 
     // 站立
-    std::cout << "[INFO] 发送站立命令..." << std::endl;
+    std::cout << "[INFO] Sending stand up command..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
     Sleep(10000);
 
     // 切换到Walk步态
     switchToWalkGait();
-    std::cout << "[INFO] 等待10秒..." << std::endl;
+    std::cout << "[INFO] Waiting 10 seconds..." << std::endl;
     Sleep(10000);
 
     // 切换到Run步态
     switchToRunGait();
-    std::cout << "[INFO] 等待10秒..." << std::endl;
+    std::cout << "[INFO] Waiting 10 seconds..." << std::endl;
     Sleep(10000);
 
     // 趴下
-    std::cout << "[INFO] 发送趴下命令..." << std::endl;
+    std::cout << "[INFO] Sending lie down command..." << std::endl;
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LIE_DOWN);
     Sleep(1000);
 
@@ -143,7 +149,7 @@ int main() {
     // 清理 Winsock
     WSACleanup();
 
-    std::cout << "[INFO] Demo结束" << std::endl;
+    std::cout << "[INFO] Demo finished" << std::endl;
     return 0;
 }
 

@@ -1,3 +1,9 @@
+// ====================================================================
+//          Created:    2025/12/25/ 15:33
+//	         Author:	xuyanghe
+//	        Company:
+// ====================================================================
+
 /**
  * @file status_receiver_demo.cpp
  * @brief 四足机器人状态接收Demo - 接收机器人上报的状态数据 (Windows版)
@@ -112,13 +118,13 @@ std::atomic<uint64_t> packet_count(0);
 
 void parseBatteryData(const uint8_t* data, size_t len) {
     if (len < sizeof(BatteryData)) return;
-    
+
     const BatteryData* battery = reinterpret_cast<const BatteryData*>(data);
-    std::cout << "[电池] 电量: " << std::fixed << std::setprecision(1) 
+    std::cout << "[Battery] Capacity: " << std::fixed << std::setprecision(1)
               << battery->percentage << "%, "
-              << "电压: " << battery->voltage << "V, "
-              << "电流: " << battery->current << "A, "
-              << "温度: " << battery->temperature << "℃" << std::endl;
+              << "Voltage: " << battery->voltage << "V, "
+              << "Current: " << battery->current << "A, "
+              << "Temperature: " << battery->temperature << " C" << std::endl;
 }
 
 void parseIMUData(const uint8_t* data, size_t len) {
@@ -132,26 +138,26 @@ void parseIMUData(const uint8_t* data, size_t len) {
 
 void parseJointData(const uint8_t* data, size_t len) {
     size_t joint_count = len / sizeof(JointData);
-    std::cout << "[关节] 共 " << joint_count << " 个关节数据" << std::endl;
-    
-    // 仅打印前4个关节的简要信息
+    std::cout << "[Joint] Total " << joint_count << " joint data" << std::endl;
+
+    // Only print brief info for first 4 joints
     const JointData* joints = reinterpret_cast<const JointData*>(data);
     for (size_t i = 0; i < (std::min)(joint_count, (size_t)4); i++) {
-        std::cout << "  关节" << i << ": pos=" << std::fixed << std::setprecision(2)
+        std::cout << "  Joint" << i << ": pos=" << std::fixed << std::setprecision(2)
                   << joints[i].position << ", vel=" << joints[i].velocity << std::endl;
     }
 }
 
 void parsePacket(const uint8_t* buffer, size_t len) {
     if (len < sizeof(PacketHeader)) {
-        std::cout << "[WARNING] 数据包过短: " << len << " bytes" << std::endl;
+        std::cout << "[WARNING] Packet too short: " << len << " bytes" << std::endl;
         return;
     }
-    
+
     const PacketHeader* header = reinterpret_cast<const PacketHeader*>(buffer);
     const uint8_t* payload = buffer + sizeof(PacketHeader);
     size_t payload_len = len - sizeof(PacketHeader);
-    
+
     switch (header->type) {
         case DATA_TYPE_BATTERY:
             parseBatteryData(payload, payload_len);
@@ -163,8 +169,8 @@ void parsePacket(const uint8_t* buffer, size_t len) {
             parseJointData(payload, payload_len);
             break;
         default:
-            std::cout << "[INFO] 收到数据类型: 0x" << std::hex << header->type 
-                      << std::dec << ", 长度: " << len << " bytes" << std::endl;
+            std::cout << "[INFO] Received data type: 0x" << std::hex << header->type
+                      << std::dec << ", Length: " << len << " bytes" << std::endl;
             break;
     }
 }
@@ -182,13 +188,13 @@ void receiverThread(SOCKET sock) {
         if (recv_len > 0) {
             packet_count++;
             
-            // 每100个包打印一次统计
+            // Print statistics every 100 packets
             if (packet_count % 100 == 0) {
                 char sender_ip[INET_ADDRSTRLEN];
                 inet_ntop(AF_INET, &sender_addr.sin_addr, sender_ip, INET_ADDRSTRLEN);
                 std::cout << "----------------------------------------" << std::endl;
-                std::cout << "[统计] 已接收 " << packet_count << " 个数据包, "
-                          << "来源: " << sender_ip << ":" << ntohs(sender_addr.sin_port) << std::endl;
+                std::cout << "[Statistics] Received " << packet_count << " packets, "
+                          << "From: " << sender_ip << ":" << ntohs(sender_addr.sin_port) << std::endl;
                 std::cout << "----------------------------------------" << std::endl;
             }
             
@@ -203,55 +209,55 @@ int main() {
     // 初始化 Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "[ERROR] Winsock 初始化失败" << std::endl;
+        std::cerr << "[ERROR] Winsock initialization failed" << std::endl;
         return -1;
     }
 
     std::cout << "========================================" << std::endl;
-    std::cout << "  四足机器人状态接收Demo (Windows)" << std::endl;
+    std::cout << "  Quadruped Robot Status Receiver Demo" << std::endl;
     std::cout << "========================================" << std::endl;
     std::cout << std::endl;
-    std::cout << "============ 网络配置说明 ==============" << std::endl;
+    std::cout << "============ Network Config ============" << std::endl;
     std::cout << std::endl;
-    std::cout << "【配置方式一】将本机IP配置为 192.168.3.157" << std::endl;
-    std::cout << "              监听端口 43893" << std::endl;
+    std::cout << "[Method 1] Set local IP to 192.168.3.157" << std::endl;
+    std::cout << "            Listen on port 43893" << std::endl;
     std::cout << std::endl;
-    std::cout << "【配置方式二】参考《天狼Q25 Ultra 软件接口规格说明书.docx》" << std::endl;
-    std::cout << "              修改机器人本体的目标IP/端口，使其与本机一致" << std::endl;
+    std::cout << "[Method 2] Refer to Q25 Ultra Software Interface Specification" << std::endl;
+    std::cout << "            Modify robot target IP/port to match local machine" << std::endl;
     std::cout << std::endl;
     std::cout << "========================================" << std::endl;
     std::cout << std::endl;
 
-    // 创建UDP socket
+    // Create UDP socket
     SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sock == INVALID_SOCKET) {
-        std::cerr << "[ERROR] 创建socket失败: " << WSAGetLastError() << std::endl;
+        std::cerr << "[ERROR] Socket creation failed: " << WSAGetLastError() << std::endl;
         WSACleanup();
         return -1;
     }
 
-    // 设置socket选项：允许地址复用
+    // Set socket option: allow address reuse
     int opt = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&opt), sizeof(opt));
 
-    // 绑定本地地址
+    // Bind local address
     struct sockaddr_in local_addr;
     memset(&local_addr, 0, sizeof(local_addr));
     local_addr.sin_family = AF_INET;
     local_addr.sin_port = htons(LOCAL_PORT);
-    local_addr.sin_addr.s_addr = INADDR_ANY;  // 监听所有网卡
+    local_addr.sin_addr.s_addr = INADDR_ANY;  // Listen on all network cards
 
     if (bind(sock, (struct sockaddr*)&local_addr, sizeof(local_addr)) == SOCKET_ERROR) {
-        std::cerr << "[ERROR] 绑定端口 " << LOCAL_PORT << " 失败: " << WSAGetLastError() << std::endl;
+        std::cerr << "[ERROR] Bind port " << LOCAL_PORT << " failed: " << WSAGetLastError() << std::endl;
         closesocket(sock);
         WSACleanup();
         return -1;
     }
 
-    std::cout << "[INFO] UDP Server 已启动" << std::endl;
-    std::cout << "[INFO] 监听端口: " << LOCAL_PORT << std::endl;
-    std::cout << "[INFO] 等待接收机器人状态数据..." << std::endl;
-    std::cout << "[INFO] 按 Ctrl+C 退出" << std::endl;
+    std::cout << "[INFO] UDP Server started" << std::endl;
+    std::cout << "[INFO] Listening on port: " << LOCAL_PORT << std::endl;
+    std::cout << "[INFO] Waiting for robot status data..." << std::endl;
+    std::cout << "[INFO] Press Ctrl+C to exit" << std::endl;
     std::cout << std::endl;
 
     // 启动接收线程
@@ -262,17 +268,17 @@ int main() {
         Sleep(1000);
     }
 
-    // 清理
+    // Cleanup
     running = false;
     closesocket(sock);
     recv_thread.join();
 
-    // 清理 Winsock
+    // Cleanup Winsock
     WSACleanup();
 
     std::cout << std::endl;
-    std::cout << "[INFO] 共接收 " << packet_count << " 个数据包" << std::endl;
-    std::cout << "[INFO] Demo结束" << std::endl;
+    std::cout << "[INFO] Total received " << packet_count << " packets" << std::endl;
+    std::cout << "[INFO] Demo finished" << std::endl;
     return 0;
 }
 

@@ -1,18 +1,24 @@
-# 四足机器人 UDP 控制 Demo
+# 四足机器人 UDP 控制 Demo (Windows 版)
 
-本目录包含四足机器人的 UDP 控制示例程序，演示如何通过 UDP 协议与机器人通信。
+本目录包含四足机器人的 Windows 平台 UDP 控制示例程序，演示如何通过 UDP 协议与机器人通信。
 
 ## 编译环境
 
-- C++11 或更高版本
-- 支持 POSIX socket 的系统（Linux/macOS）
-- pthread 库
+- Windows 10/11
+- Visual Studio 2017 或更高版本（或支持 C++11 的编译器）
+- CMake 3.14 或更高版本
 
-## 通用编译命令
+## 编译方法
 
-```bash
-g++ -std=c++11 -pthread <demo_name>.cpp -o <demo_name>
+```powershell
+# 在项目根目录执行
+mkdir build
+cd build
+cmake .. -G "Visual Studio 17 2022" -A x64
+cmake --build . --config Release
 ```
+
+编译完成后，可执行文件位于 `build/windows/release/bin/` 目录。
 
 ## 网络配置
 
@@ -35,7 +41,7 @@ g++ -std=c++11 -pthread <demo_name>.cpp -o <demo_name>
 
 ## Demo 列表
 
-### 1. stand_lie_demo.cpp - 站立/趴下控制
+### 1. stand_lie_demo.exe - 站立/趴下控制
 
 **功能**: 演示机器人站立和趴下的基本控制。
 
@@ -45,15 +51,9 @@ g++ -std=c++11 -pthread <demo_name>.cpp -o <demo_name>
 3. 等待 3 秒
 4. 发送趴下命令
 
-**编译运行**:
-```bash
-g++ -std=c++11 -pthread stand_lie_demo.cpp -o stand_lie_demo
-./stand_lie_demo
-```
-
 ---
 
-### 2. axis_control_demo.cpp - 摇杆轴控制
+### 2. axis_control_demo.exe - 摇杆轴控制
 
 **功能**: 演示通过摇杆轴值控制机器人移动和转向。
 
@@ -66,21 +66,53 @@ g++ -std=c++11 -pthread stand_lie_demo.cpp -o stand_lie_demo
 
 **流程**:
 1. 启动心跳
-2. 前进 2 秒
-3. 后退 2 秒
+2. 前进 1 秒
+3. 后退 1 秒
 4. 左转 2 秒
 5. 右转 2 秒
-6. 左移/右移各 2 秒
-
-**编译运行**:
-```bash
-g++ -std=c++11 -pthread axis_control_demo.cpp -o axis_control_demo
-./axis_control_demo
-```
+6. 左移/右移各 1 秒
 
 ---
 
-### 3. motion_mode_demo.cpp - 运动模式切换
+### 2.1. axis_control_demo_new.exe - 扩展指令摇杆控制
+
+**功能**: 使用扩展指令协议（0x21010140）一次性发送四个轴值控制机器人。
+
+**与 axis_control_demo 的区别**:
+| 特性 | axis_control_demo | axis_control_demo_new |
+|------|-------------------|----------------------|
+| 协议 | 单轴指令（4个命令） | 扩展指令（1个命令） |
+| 命令码 | 0x21010130/0x21010131/0x21010135 | 0x21010140 |
+| 轴值范围 | [-1000, 1000] | [-1000, 1000] |
+| 死区 | 有 | 无 |
+
+**指令结构**:
+```cpp
+struct CommandHead {
+    uint32_t command_type;   // 1 = 扩展指令
+    uint32_t command_code;   // 0x21010140
+    uint32_t parameter_size; // sizeof(AxisCommand) = 16
+};
+
+struct AxisCommand {
+    uint32_t left_x;   // 平移摇杆X轴值
+    uint32_t left_y;   // 平移摇杆Y轴值
+    uint32_t right_x;  // 转向摇杆X轴值
+    uint32_t right_y;  // 转向摇杆Y轴值
+};
+```
+
+**流程**:
+1. 启动心跳
+2. 发送站立命令
+3. 前进 1 秒
+4. 后退 1 秒
+5. 左转 2 秒
+6. 右转 2 秒
+
+---
+
+### 3. motion_mode_demo.exe - 运动模式切换
 
 **功能**: 演示切换机器人的运动模式。
 
@@ -91,15 +123,9 @@ g++ -std=c++11 -pthread axis_control_demo.cpp -o axis_control_demo
 | 导航模式 | 0x21010C03 | 执行自主导航任务 |
 | 辅助模式 | 0x21010C04 | 进入辅助控制模式 |
 
-**编译运行**:
-```bash
-g++ -std=c++11 -pthread motion_mode_demo.cpp -o motion_mode_demo
-./motion_mode_demo
-```
-
 ---
 
-### 4. gait_switch_demo.cpp - 步态切换
+### 4. gait_switch_demo.exe - 步态切换
 
 **功能**: 演示切换机器人的行走步态。
 
@@ -109,15 +135,9 @@ g++ -std=c++11 -pthread motion_mode_demo.cpp -o motion_mode_demo
 | Walk | 0x21010300 | 稳定四足行走，适用于平坦地面 |
 | Trot/Run | 0x21010423 | 对角步态，速度更快 |
 
-**编译运行**:
-```bash
-g++ -std=c++11 -pthread gait_switch_demo.cpp -o gait_switch_demo
-./gait_switch_demo
-```
-
 ---
 
-### 5. emergency_stop_demo.cpp - 急停控制
+### 5. emergency_stop_demo.exe - 急停控制
 
 **功能**: 演示发送急停命令使机器人立即停止。
 
@@ -126,15 +146,9 @@ g++ -std=c++11 -pthread gait_switch_demo.cpp -o gait_switch_demo
 - 需要重新发送站立命令才能恢复运动
 - 适用于紧急情况
 
-**编译运行**:
-```bash
-g++ -std=c++11 -pthread emergency_stop_demo.cpp -o emergency_stop_demo
-./emergency_stop_demo
-```
-
 ---
 
-### 6. height_control_demo.cpp - 高度调节
+### 6. height_control_demo.exe - 高度调节
 
 **功能**: 演示调节机器人身体高度。
 
@@ -145,15 +159,9 @@ g++ -std=c++11 -pthread emergency_stop_demo.cpp -o emergency_stop_demo
 | 中 | 1 | 默认高度 |
 | 高 | 2 | 视野更好，稳定性略降 |
 
-**编译运行**:
-```bash
-g++ -std=c++11 -pthread height_control_demo.cpp -o height_control_demo
-./height_control_demo
-```
-
 ---
 
-### 7. auto_charge_demo.cpp - 自主充电
+### 7. auto_charge_demo.exe - 自主充电
 
 **功能**: 演示启动和停止自主充电任务。
 
@@ -167,15 +175,9 @@ g++ -std=c++11 -pthread height_control_demo.cpp -o height_control_demo
 | 启动 | 0 | 开始自主充电任务 |
 | 停止 | 1 | 取消充电任务 |
 
-**编译运行**:
-```bash
-g++ -std=c++11 -pthread auto_charge_demo.cpp -o auto_charge_demo
-./auto_charge_demo
-```
-
 ---
 
-### 8. power_control_demo.cpp - 设备电源控制
+### 8. power_control_demo.exe - 设备电源控制
 
 **功能**: 演示控制机器人各设备的电源开关。
 
@@ -191,15 +193,9 @@ g++ -std=c++11 -pthread auto_charge_demo.cpp -o auto_charge_demo
 
 **参数**: 0 = 关闭, 1 = 开启
 
-**编译运行**:
-```bash
-g++ -std=c++11 -pthread power_control_demo.cpp -o power_control_demo
-./power_control_demo
-```
-
 ---
 
-### 9. status_receiver_demo.cpp - 状态接收
+### 9. status_receiver_demo.exe - 状态接收
 
 **功能**: 接收机器人主动上报的状态数据。
 
@@ -215,12 +211,6 @@ g++ -std=c++11 -pthread power_control_demo.cpp -o power_control_demo
 - 关节数据：位置、速度、力矩、温度
 - 运动状态：当前步态、运动模式、速度等
 
-**编译运行**:
-```bash
-g++ -std=c++11 -pthread status_receiver_demo.cpp -o status_receiver_demo
-./status_receiver_demo
-```
-
 **退出**: 按 `Ctrl+C` 停止接收
 
 ---
@@ -230,15 +220,20 @@ g++ -std=c++11 -pthread status_receiver_demo.cpp -o status_receiver_demo
 所有 Demo 遵循统一的代码结构：
 
 ```cpp
-// 1. 配置区
+// 1. Windows 头文件
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+
+// 2. 配置区
 const char* ROBOT_IP = "192.168.3.20";
 const int ROBOT_PORT = 43893;
 
-// 2. 命令码定义
+// 3. 命令码定义
 constexpr uint32_t CMD_HEARTBEAT = 0x21040001;
 // ...
 
-// 3. UDP命令结构体
+// 4. UDP命令结构体
 #pragma pack(push, 1)
 struct UDPCommand {
     uint32_t code;
@@ -247,14 +242,19 @@ struct UDPCommand {
 };
 #pragma pack(pop)
 
-// 4. UDP发送函数
+// 5. UDP发送函数（使用 Winsock2）
 void sendCommand(const char* ip, int port, uint32_t cmd_code, int32_t param = 0);
 
-// 5. 心跳线程（2Hz）
+// 6. 心跳线程（2Hz）
 void heartbeatThread();
 
-// 6. 主函数
-int main() { ... }
+// 7. 主函数（包含 WSAStartup/WSACleanup）
+int main() {
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+    // ... 业务逻辑 ...
+    WSACleanup();
+}
 ```
 
 ## 心跳机制
@@ -270,7 +270,7 @@ int main() { ... }
 1. **安全第一**: 测试前确保机器人周围有足够空间
 2. **心跳必须**: 发送任何控制命令前必须先启动心跳
 3. **网络连通**: 确保本机与机器人网络连通
-4. **权限问题**: 某些系统可能需要 root 权限运行网络程序
+4. **防火墙**: 确保 Windows 防火墙允许 UDP 端口 43893 通信
 5. **急停准备**: 随时准备使用急停命令或物理急停按钮
 
 ## 命令码速查表
@@ -289,5 +289,7 @@ int main() { ... }
 | 左摇杆Y轴 | 0x21010130 | 轴值 |
 | 左摇杆X轴 | 0x21010131 | 轴值 |
 | 右摇杆X轴 | 0x21010135 | 轴值 |
+| 扩展轴控 | 0x21010140 | AxisCommand结构 |
 | 自主充电 | 0x91910250 | 0=启动, 1=停止 |
+
 
