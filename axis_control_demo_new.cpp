@@ -40,6 +40,7 @@ const int ROBOT_PORT = 43893;
 // ============ 命令码 ============
 constexpr uint32_t CMD_HEARTBEAT    = 0x21040001;
 constexpr uint32_t CMD_STAND_UP     = 0x21010202;
+constexpr uint32_t CMD_LIE_DOWN   = 0x21010222;
 constexpr uint32_t CMD_AXIS_CONTROL = 0x21010140;  // 轴控制指令码（复杂指令）
 constexpr uint32_t EXTENDED_CMD     = 1;           // 扩展指令类型
 
@@ -176,6 +177,7 @@ void heartbeatThread() {
 }
 
 // ============ 运动控制函数 ============
+// 50Hz = 20ms间隔
 
 // 前进（左摇杆Y轴正向）
 void moveForward(int duration_sec) {
@@ -184,8 +186,11 @@ void moveForward(int duration_sec) {
     cmd.left_y = AXIS_FORWARD;
     cmd.right_x = 0;
     cmd.right_y = 0;
-    sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
+        Sleep(10);  // 100Hz = 10ms
+    }
     cmd.left_y = AXIS_STOP;
     sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
 }
@@ -197,8 +202,11 @@ void moveBackward(int duration_sec) {
     cmd.left_y = AXIS_BACKWARD;
     cmd.right_x = 0;
     cmd.right_y = 0;
-    sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
+        Sleep(10);  // 100Hz = 10ms
+    }
     cmd.left_y = AXIS_STOP;
     sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
 }
@@ -210,8 +218,11 @@ void turnLeft(int duration_sec) {
     cmd.left_y = 0;
     cmd.right_x = AXIS_TURN_LEFT;
     cmd.right_y = 0;
-    sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
+        Sleep(10);  // 100Hz = 10ms
+    }
     cmd.right_x = AXIS_STOP;
     sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
 }
@@ -223,8 +234,11 @@ void turnRight(int duration_sec) {
     cmd.left_y = 0;
     cmd.right_x = AXIS_TURN_RIGHT;
     cmd.right_y = 0;
-    sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
+        Sleep(10);  // 100Hz = 10ms
+    }
     cmd.right_x = AXIS_STOP;
     sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
 }
@@ -236,8 +250,11 @@ void moveLeft(int duration_sec) {
     cmd.left_y = 0;
     cmd.right_x = 0;
     cmd.right_y = 0;
-    sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
+        Sleep(10);  // 100Hz = 10ms
+    }
     cmd.left_x = AXIS_STOP;
     sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
 }
@@ -249,8 +266,11 @@ void moveRight(int duration_sec) {
     cmd.left_y = 0;
     cmd.right_x = 0;
     cmd.right_y = 0;
-    sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
+        Sleep(10);  // 100Hz = 10ms
+    }
     cmd.left_x = AXIS_STOP;
     sendAxisControl(ROBOT_IP, ROBOT_PORT, cmd);
 }
@@ -286,13 +306,13 @@ int main() {
     Sleep(10000);
 
     // 前进1秒
-    std::cout << "[INFO] Moving forward 1s..." << std::endl;
-    moveForward(1);
+    std::cout << "[INFO] Moving forward 2s..." << std::endl;
+    moveForward(2);
     Sleep(1000);
 
     // 后退1秒
-    std::cout << "[INFO] Moving backward 1s..." << std::endl;
-    moveBackward(1);
+    std::cout << "[INFO] Moving backward 2s..." << std::endl;
+    moveBackward(2);
     Sleep(1000);
 
     // 左转2秒
@@ -306,13 +326,18 @@ int main() {
     Sleep(1000);
 
     // 左移1秒
-    std::cout << "[INFO] Moving left 1s..." << std::endl;
-    moveLeft(1);
+    std::cout << "[INFO] Moving left 2s..." << std::endl;
+    moveLeft(2);
     Sleep(1000);
 
     // 右移1秒
-    std::cout << "[INFO] Moving right 1s..." << std::endl;
-    moveRight(1);
+    std::cout << "[INFO] Moving right 2s..." << std::endl;
+    moveRight(2);
+    Sleep(1000);
+
+    // 趴下
+    std::cout << "[INFO] Sending lie down command..." << std::endl;
+    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LIE_DOWN);
     Sleep(1000);
 
     // 停止心跳线程

@@ -127,13 +127,13 @@ int main() {
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_STAND_UP);
     Sleep(10000);
 
-    // 切换到Walk步态
-    switchToWalkGait();
+    // 切换到Run步态
+    switchToRunGait();
     std::cout << "[INFO] Waiting 10 seconds..." << std::endl;
     Sleep(10000);
 
-    // 切换到Run步态
-    switchToRunGait();
+    // 切换到Walk步态
+    switchToWalkGait();
     std::cout << "[INFO] Waiting 10 seconds..." << std::endl;
     Sleep(10000);
 

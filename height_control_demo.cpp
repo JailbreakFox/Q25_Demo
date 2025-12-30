@@ -139,7 +139,7 @@ int main() {
     std::cout << "[INFO] Waiting 10 seconds..." << std::endl;
     Sleep(10000);
 
-    // 设置高高度
+    // 设置正常高度
     setNormalHigh();
     std::cout << "[INFO] Waiting 10 seconds..." << std::endl;
     Sleep(10000);

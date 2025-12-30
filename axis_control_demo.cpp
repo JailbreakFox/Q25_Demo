@@ -38,6 +38,7 @@ const int ROBOT_PORT = 43893;
 // ============ 命令码 ============
 constexpr uint32_t CMD_HEARTBEAT     = 0x21040001;
 constexpr uint32_t CMD_STAND_UP      = 0x21010202;
+constexpr uint32_t CMD_LIE_DOWN   = 0x21010222;
 constexpr uint32_t CMD_LEFT_YAXIS    = 0x21010130;  // 左摇杆Y轴（前后）
 constexpr uint32_t CMD_LEFT_XAXIS    = 0x21010131;  // 左摇杆X轴（左右）
 constexpr uint32_t CMD_RIGHT_XAXIS   = 0x21010135;  // 右摇杆X轴（旋转）
@@ -100,46 +101,65 @@ void heartbeatThread() {
 }
 
 // ============ 运动控制函数 ============
+// 50Hz = 20ms间隔
 
 // 前进（左摇杆Y轴正向）
 void moveForward(int duration_sec) {
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_YAXIS, AXIS_FORWARD);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_YAXIS, AXIS_FORWARD);
+        Sleep(10);  // 100Hz = 10ms
+    }
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_YAXIS, AXIS_STOP);
 }
 
 // 后退（左摇杆Y轴负向）
 void moveBackward(int duration_sec) {
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_YAXIS, AXIS_BACKWARD);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_YAXIS, AXIS_BACKWARD);
+        Sleep(10);  // 100Hz = 10ms
+    }
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_YAXIS, AXIS_STOP);
 }
 
 // 左转（右摇杆X轴负向）
 void turnLeft(int duration_sec) {
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_RIGHT_XAXIS, AXIS_TURN_LEFT);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendCommand(ROBOT_IP, ROBOT_PORT, CMD_RIGHT_XAXIS, AXIS_TURN_LEFT);
+        Sleep(10);  // 100Hz = 10ms
+    }
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_RIGHT_XAXIS, AXIS_STOP);
 }
 
 // 右转（右摇杆X轴正向）
 void turnRight(int duration_sec) {
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_RIGHT_XAXIS, AXIS_TURN_RIGHT);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendCommand(ROBOT_IP, ROBOT_PORT, CMD_RIGHT_XAXIS, AXIS_TURN_RIGHT);
+        Sleep(10);  // 100Hz = 10ms
+    }
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_RIGHT_XAXIS, AXIS_STOP);
 }
 
 // 左移（左摇杆X轴负向）
 void moveLeft(int duration_sec) {
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_XAXIS, AXIS_MOVE_LEFT);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_XAXIS, AXIS_MOVE_LEFT);
+        Sleep(10);  // 100Hz = 10ms
+    }
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_XAXIS, AXIS_STOP);
 }
 
 // 右移（左摇杆X轴正向）
 void moveRight(int duration_sec) {
-    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_XAXIS, AXIS_MOVE_RIGHT);
-    Sleep(duration_sec * 1000);
+    int total_ms = duration_sec * 1000;
+    for (int i = 0; i < total_ms; i += 10) {
+        sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_XAXIS, AXIS_MOVE_RIGHT);
+        Sleep(10);  // 100Hz = 10ms
+    }
     sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LEFT_XAXIS, AXIS_STOP);
 }
 
@@ -172,13 +192,13 @@ int main() {
     Sleep(10000);
 
     // 前进1秒
-    std::cout << "[INFO] Moving forward 1s..." << std::endl;
-    moveForward(1);
+    std::cout << "[INFO] Moving forward 2s..." << std::endl;
+    moveForward(2);
     Sleep(1000);
 
     // 后退1秒
-    std::cout << "[INFO] Moving backward 1s..." << std::endl;
-    moveBackward(1);
+    std::cout << "[INFO] Moving backward 2s..." << std::endl;
+    moveBackward(2);
     Sleep(1000);
 
     // 左转2秒
@@ -192,13 +212,18 @@ int main() {
     Sleep(1000);
 
     // 左移1秒
-    std::cout << "[INFO] Moving left 1s..." << std::endl;
-    moveLeft(1);
+    std::cout << "[INFO] Moving left 2s..." << std::endl;
+    moveLeft(2);
     Sleep(1000);
 
     // 右移1秒
-    std::cout << "[INFO] Moving right 1s..." << std::endl;
-    moveRight(1);
+    std::cout << "[INFO] Moving right 2s..." << std::endl;
+    moveRight(2);
+    Sleep(1000);
+
+    // 趴下
+    std::cout << "[INFO] Sending lie down command..." << std::endl;
+    sendCommand(ROBOT_IP, ROBOT_PORT, CMD_LIE_DOWN);
     Sleep(1000);
 
     // 停止心跳线程
