@@ -89,9 +89,9 @@ cmake --build . --config Release
 **指令结构**:
 ```cpp
 struct CommandHead {
-    uint32_t command_type;   // 1 = 扩展指令
-    uint32_t command_code;   // 0x21010140
+    uint32_t command_id;   // 0x21010140
     uint32_t parameter_size; // sizeof(AxisCommand) = 16
+    uint32_t command_type;   // 1 = 扩展指令
 };
 
 struct AxisCommand {
@@ -236,9 +236,9 @@ constexpr uint32_t CMD_HEARTBEAT = 0x21040001;
 // 4. UDP命令结构体
 #pragma pack(push, 1)
 struct UDPCommand {
-    uint32_t code;
-    uint32_t parameters_size;
-    uint32_t type;
+	uint32_t command_id;
+    uint32_t parameter_size;
+    uint32_t command_type;
 };
 #pragma pack(pop)
 

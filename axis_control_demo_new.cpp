@@ -60,9 +60,9 @@ constexpr int32_t AXIS_STOP = 0;  // 停止（所有轴）
 // ============ 指令头结构体（复杂指令） ============
 #pragma pack(push, 1)
 struct CommandHead {
-    uint32_t command_type;   // 1 = 扩展指令
-    uint32_t command_code;   // 指令码
+	uint32_t command_id;     // 指令码
     uint32_t parameter_size; // 数据体字节数
+    uint32_t command_type;   // 1 = 扩展指令
 };
 #pragma pack(pop)
 
@@ -142,7 +142,7 @@ void sendAxisControl(const char* ip, int port, const AxisCommand& axisCmd) {
     // 构造复杂指令消息
     AxisControlMessage msg;
     msg.head.command_type = EXTENDED_CMD;           // 1 = 扩展指令
-    msg.head.command_code = CMD_AXIS_CONTROL;       // 0x21010140
+    msg.head.command_id = CMD_AXIS_CONTROL;         // 0x21010140
     msg.head.parameter_size = sizeof(AxisCommand);  // 16 字节
 
     // 将 AxisCommand 数据复制到 data 字段
